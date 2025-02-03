@@ -31,6 +31,12 @@ $sql = "
         ct.net_pay,
         ct.reg_date,
 
+
+                e.absent_lateRate,
+
+
+
+
         COALESCE(SUM(o.grand_total), 0) AS overload_hr, 
         COALESCE(c.medical_savings, 0) AS medical_savings, 
         COALESCE(c.retirement, 0) AS retirement, 
@@ -226,8 +232,22 @@ $result = $conn->query($sql);
                                 echo "<td name='watch_total' class='p-2'>{$row['watch_total']}</td>"; // Watch Total
                                 echo "<td name='gross_pay' class='p-2'>{$row['gross_pay']}</td>"; // Gross Pay
                                 echo "<td><input type='number' name='absent_late_hr' class='editable-cell' value='{$row['absent_late_hr']}'></td>"; // Absent Late HR
-                                echo "<td><input type='number' name='absent_late_rate' class='editable-cell' value='{$row['absent_late_rate']}'></td>"; // Absent Late Rate
-                                echo "<td name='absent_late_total' class='p-2'>{$row['absent_late_total']}</td>"; // Absent Late Total
+
+
+
+
+
+
+
+                                echo "<td class='p-2' name='absent_late_rate'>{$row['absent_lateRate']}</td>"; // Overload HR
+
+
+
+
+                                echo "<td name='absent_late_total' class='p-2'>0.00</td>"; // Absent Late Total
+
+                                // echo "<td><input type='number' name='absent_late_rate' class='editable-cell' value='{$row['absent_late_rate']}'></td>"; // Absent Late Rate
+
                                 echo "<td><input type='number' name='pagibig' class='editable-cell' value='{$row['pagibig']}'></td>"; // Pagibig
                                 echo "<td><input type='number' name='mp2' class='editable-cell' value='{$row['mp2']}'></td>"; // MP2
                                 echo "<td class='p-2'>{$row['pag_ibig_total']}</td>"; // Pag-ibig Total
@@ -318,8 +338,22 @@ $result = $conn->query($sql);
                 const wrRate = parseFloat(row.querySelector("input[name='wr_rate']").value) || 0;
                 const watchHR = parseFloat(row.querySelector("input[name='watch_hr']").value) || 0;
                 const watchRate = parseFloat(row.querySelector("input[name='watch_rate']").value) || 0;
+
+
                 const absentLateHR = parseFloat(row.querySelector("input[name='absent_late_hr']").value) || 0;
-                const absentLateRate = parseFloat(row.querySelector("input[name='absent_late_rate']").value) || 0;
+                const absentLateRate = parseFloat(row.querySelector("td:nth-child(16)").textContent) || 0;
+
+                // Calculate the absent late total
+                const absentLateTotal = absentLateHR * absentLateRate;
+
+                // Update the absent late total cell
+                row.querySelector("td[name='absent_late_total']").textContent = absentLateTotal.toFixed(2);
+
+
+
+                // const absentLateRate = parseFloat(row.querySelector("input[name='absent_late_rate']").value) || 0;
+
+
                 const pagibig = parseFloat(row.querySelector("input[name='pagibig']").value) || 0;
                 const mp2 = parseFloat(row.querySelector("input[name='mp2']").value) || 0;
                 const canteen = parseFloat(row.querySelector("input[name='canteen']").value) || 0;
@@ -335,7 +369,7 @@ $result = $conn->query($sql);
                 const wrTotal = wrHR * wrRate;
                 const adjustmentTotal = adjustmentHR * adjustmentRate;
                 const watchRewardTotal = watchHR * watchRate;
-                const absentLateTotal = absentLateHR * absentLateRate;
+
                 const totalContributions = pagibigTotal + medicalSavings + sssTotal + retirement + philhealthTotal;
                 const totalDeduction = absentLateTotal + pagibig + mp2 + totalContributions + canteen + others;
 
@@ -349,7 +383,12 @@ $result = $conn->query($sql);
                 row.querySelector("td[name='wr_total']").textContent = wrTotal.toFixed(2);
                 row.querySelector("td[name='adjust_total']").textContent = adjustmentTotal.toFixed(2);
                 row.querySelector("td[name='watch_total']").textContent = watchRewardTotal.toFixed(2);
-                row.querySelector("td[name='absent_late_total']").textContent = absentLateTotal.toFixed(2);
+
+
+
+
+
+
                 row.querySelector("td[name='gross_pay']").textContent = grossPay.toFixed(2);
                 row.querySelector("td[name='total_deduction']").textContent = totalDeduction.toFixed(2);
                 row.querySelector("td[name='net_pay']").textContent = netPay.toFixed(2);
